@@ -1,0 +1,194 @@
+<template name="navigation">
+    <nav class="navbar-default navbar-static-side " role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear">
+                                {{#if isConnected}}
+                                    <span class="block m-t-xs"> <strong
+                                            class="font-bold">{{getConnection.connectionName}}</strong>
+                                </span>
+                                <span class="block m-t-xs">
+                                    {{{getServerList}}}
+                                </span>
+                                    <span class="text-muted text-xs block">{{getConnection.databaseName}} <b
+                                            class="caret"></b>
+                                    </span>
+                                {{else}}
+                                    <span class="block mt-xs">Not Connected !</span>
+                                {{/if}}
+                            </span>
+                        </a>
+                        {{#if isConnected}}
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a id="btnRefreshCollections" href="#"><i class="fa fa-refresh"></i> Refresh
+                                    collections</a></li>
+                                <li><a id="btnDropDatabase" href="#"><i class="fa fa-remove"></i> Drop database</a>
+                                </li>
+                                <li><a id="btnDropAllCollections" href="#"><i class="fa fa-remove"></i> Drop all
+                                    collections</a></li>
+
+                                <!--
+                                <li class="divider"></li>
+                                <li><a href="#">Item</a></li>-->
+                            </ul>
+                        {{/if}}
+                    </div>
+                    <div class="logo-element">
+                        MC+
+                    </div>
+                </li>
+                {{#if isConnected}}
+                    <li class="{{isActivePath regex='databaseStats'}}">
+                        <a class="aNavigations" href="{{pathFor route='databaseStats'}}"><i
+                                class="fa fa-eye"></i> <span
+                                class="nav-label">Database Stats</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href=""><i
+                                class="fa fa-wrench"></i> <span
+                                class="nav-label">Management</span>
+                            <span class="fa arrow"></span>
+                        </a>
+
+                        <ul class="nav nav-second-level collapse out">
+                            <li class="{{isActivePath regex='userManagement'}}">
+                                <a class="aNavigations" href="{{pathFor route='userManagement'}}"><i
+                                        class="fa fa-user"></i> <span
+                                        class="nav-label">User Management</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='databaseDumpRestore'}}">
+                                <a id="anchorDatabaseDumpRestore" class="aNavigations"><i
+                                        class="fa fa-download"></i> <span
+                                        class="nav-label">Dump/Restore/Import</span>
+                                    <span class="pull-right label label-primary">BETA</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='fileManagement'}}">
+                                <a class="aNavigations" href="{{pathFor route='fileManagement'}}"><i
+                                        class="fa fa-file"></i> <span
+                                        class="nav-label">File Management</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='indexManagement'}}">
+                                <a class="aNavigations" href="{{pathFor route='indexManagement'}}"><i
+                                        class="fa fa-bolt"></i> <span
+                                        class="nav-label">Index Management</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='adminQueries'}}">
+                                <a class="aNavigations" href="{{pathFor route='adminQueries'}}"><i
+                                        class="fa fa-key"></i> <span
+                                        class="nav-label">Admin Queries</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href=""><i
+                                class="fa fa-gears"></i> <span
+                                class="nav-label">Tools</span>
+                            <span class="fa arrow"></span>
+                        </a>
+
+                        <ul class="nav nav-second-level collapse out">
+                            <li class="{{isActivePath regex='shell'}}">
+                                <a id="anchorShell" class="aNavigations" href="{{pathFor route='shell'}}"><i
+                                        class="fa fa-window-maximize"></i> <span
+                                        class="nav-label">Shell</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='aggregatePipeline'}}">
+                                <a class="aNavigations" href="{{pathFor route='aggregatePipeline'}}"><i
+                                        class="fa fa-tasks"></i> <span
+                                        class="nav-label">Aggregate</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='storedFunctions'}}">
+                                <a class="aNavigations" href="{{pathFor route='storedFunctions'}}"><i
+                                        class="fa fa-suitcase"></i> <span
+                                        class="nav-label">Stored Functions</span>
+                                </a>
+                            </li>
+
+                            <li class="{{isActivePath regex='schemaAnalyzer'}}">
+                                <a class="aNavigations" href="{{pathFor route='schemaAnalyzer'}}"><i
+                                        class="fa fa-braille"></i> <span
+                                        class="nav-label">Schema Analyzer</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a class="navCollectionTop" href=""><i class="fa fa-dashboard"></i> <span
+                                class="nav-label">Collections</span>
+                            <span class="fa arrow pull-right"></span>
+
+                            {{#if filtered}}
+                                <span title="Filtered" style="margin-left: 15px"
+                                      class="label label-info">Filtered</span>
+                            {{/if}}
+                        </a>
+
+                        <ul id="listCollectionNames" class="nav nav-second-level">
+                            {{#each getCollectionNames}}
+                                <li>
+                                    <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                            class="fa fa-book"></i> <span
+                                            class="nav-label">{{name}}</span>
+                                        {{#if equals type 'view'}}
+                                            <span title="View" style="margin-left: 15px"
+                                                  class="label label-info">View</span>
+                                        {{/if}}
+                                    </a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    </li>
+
+                    {{#if getSystemCollectionNames}}
+                        <li>
+                            <a href="#"><i class="fa fa-server"></i> <span
+                                    class="nav-label">System</span>
+                                <span class="fa arrow pull-right"></span>
+                            </a>
+
+                            <ul id="listSystemCollections" class="nav nav-second-level collapse out">
+                                {{#each getSystemCollectionNames}}
+                                    <li>
+                                        <a class="navCollection" href="{{pathFor route='browseCollection'}}"><i
+                                                class="fa fa-book"></i> <span
+                                                class="nav-label">{{name}}</span>
+                                        </a>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </li>
+                    {{/if}}
+
+                    {{initializeMetisMenu}}
+                {{/if}}
+            </ul>
+        </div>
+    </nav>
+
+    {{> filterCollection}}
+    {{> addCollection}}
+    {{> convertToCapped}}
+    {{> renameCollection}}
+    {{> validationRules}}
+
+</template>

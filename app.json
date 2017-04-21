@@ -1,0 +1,27 @@
+{
+  "name": "Mongoclient",
+  "description": "MongoDB Management Tool",
+  "repository": "https://github.com/mongoclient/mongoclient",
+  "logo": "http://mongoclient.com/img/logo/head_only_big.png",
+  "keywords": [
+    "meteor",
+    "mongodb",
+    "community",
+    "developerTool",
+    "managementTool"
+  ],
+  "website": "http://www.mongoclient.com",
+  "env": {
+    "BUILDPACK_URL": "https://github.com/rsercano/meteor-buildpack-horse",
+    "ROOT_URL": {
+      "description": "Please put same app name as subdomain to here",
+      "value": "http://your-app-name.herokuapp.com",
+      "required": true
+    }
+  },
+  "stack": "heroku-16",
+  "addons": [
+    "mongolab",
+    "logentries"
+  ]
+}

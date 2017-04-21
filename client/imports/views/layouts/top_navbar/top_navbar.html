@@ -1,0 +1,191 @@
+<template name="topNavbar">
+    <div class="row border-bottom">
+        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <a id="navbar-minimalize" class="minimalize-styl-2 btn btn-primary " href="#"><i
+                        class="fa fa-bars"></i>
+                </a>
+                <form role="search" class="navbar-form-custom">
+                    <div class="form-group">
+                        <input type="text" disabled="true" placeholder="Search for something..."
+                               class="form-control"
+                               name="top-search"
+                               id="top-search">
+                    </div>
+                </form>
+            </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-chevron-circle-down"></i> More
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        {{#if isConnected}}
+                            <li>
+                                <a id="btnSwitchDatabase" href="">
+                                    <i class="fa fa-database"></i> Switch Database
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a id="btnRefreshCollections2" href="#"><i class="fa fa-refresh"></i> Refresh
+                                Collections</a></li>
+                            <li class="divider"></li>
+                        {{/if}}
+                        <li>
+                            <a href="{{pathFor route="settings"}}">
+                                <i class="fa fa-gears"></i> Settings
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a id="btnImportMongoclient">
+                                <i class="fa fa-download"></i> Import Mongoclient Data
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a id="btnExportMongoclient">
+                                <i class="fa fa-upload"></i> Export Mongoclient Data
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a id="btnAboutMongoclient" href="">
+                                <i class="fa fa-globe"></i> About
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    {{#if isConnected}}
+                        <a id="btnDisconnect" href="#">
+                            <i class="fa fa-sign-out"></i> Disconnect
+                        </a>
+                    {{else}}
+                        <a id="btnConnectionList" href="#" data-toggle="modal" data-target="#connectionModal">
+                            <i class="fa fa-sign-in"></i> Connect
+                        </a>
+                    {{/if}}
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+    <!-- MODAL About-->
+    <div class="modal inmodal" id="aboutModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content animated bounceInRight">
+                <div style="background-color: #F4F4F6" class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <img width="80" height="110" src="/logo/new/image_only.png" class="modal-icon"/>
+                    <h4 class="modal-title">Mongoclient</h4>
+                    <huge class="font-bold">Open Source Edition - Version 2.0.0<br/>
+                        Licensed with AGPLv3 © 2017 <br/>
+                        Contact with <a href="mailto:info@mongoclient.com">info@mongoclient.com</a> for
+                        <b>Enterprise</b> edition
+                    </huge>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL Import/Export Mongoclient-->
+    <div class="modal inmodal" id="importExportMongoclientModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <i id="importExportMongoclientIcon" class="fa fa-download modal-icon"></i>
+                    <h4 id="importExportMongoclientTitle" class="modal-title">Import Mongoclient Data</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="frmImportMongoclient" class="form-horizontal" style="display: none">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Backup File </label>
+                            <div class="col-lg-9">
+                                <input class="form-control" type="text" id="inputImportBackupFile"
+                                       data-buttonName="btn-primary">
+                                <span class="help-block m-b-none">Example: <b>/home/user/mongoclient/backup_17_10_2016_18_24_01.json</b></span>
+                            </div>
+                        </div>
+                    </form>
+
+                    <form id="frmExportMongoclient" class="form-horizontal" style="display: none">
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Place to Export </label>
+                            <div class="col-lg-9">
+                                <input class="form-control" type="text" id="inputExportBackupDir"
+                                       data-buttonName="btn-primary">
+                                <span class="help-block m-b-none">Example: <b>/home/user/mongoclient/</b></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnProceedImportExport" title="Import Now !" type="button"
+                            class="btn btn-primary ladda-button" data-style="contract">Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL Switch Database-->
+    <div class="modal inmodal" id="switchDatabaseModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">Close</span></button>
+                    <i class="fa fa-database modal-icon"></i>
+                    <h4 class="modal-title">Databases</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="tblSwitchDatabases"
+                           class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                           style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>Database Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Database Name</label>
+                            <div class="col-lg-10">
+                                <input id="inputDatabaseNameToSwitch" required="true"
+                                       type="text"
+                                       placeholder="Database Name" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    </div>
+                    <button id="btnConnectSwitchedDatabase" title="Connect !" type="button" disabled="true"
+                            class="btn btn-primary ladda-button" data-style="contract">Connect Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{> connections}}
+
+</template>

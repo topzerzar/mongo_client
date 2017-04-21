@@ -1,0 +1,256 @@
+<template name="databaseStats">
+    {{> pageHeading title='Mongoclient' }}
+    {{#if Template.subscriptionsReady}}
+        {{#if isConnected}}
+
+            {{#if getServerStatus}}
+                <div class="row m-b-lg m-t-lg">
+                    <div class="col-md-9">
+
+                        <div class="profile-info">
+                            <div class="">
+                                <div>
+                                    <h2 class="no-margins">
+                                        {{getServerStatus.host}}
+                                    </h2>
+                                    <h4>The server is up for {{getServerStatus.uptime}} seconds</h4>
+                                    <small>
+                                        The performances which are shown here are coming from
+                                        <strong>serverStatus</strong>, <strong>top</strong>
+                                        and
+                                        <strong>stats</strong> queries.
+                                        Therefore, before having a look at below graphs consider
+                                        <strong>mongoclient</strong> is
+                                        already executing <strong>serverStatus</strong> at regular intervals. See <a
+                                            href="https://docs.mongodb.org/manual/administration/monitoring/#commands">here</a>
+                                        for more info<br/><br/>
+
+                                        Mongodb version is <strong>{{getServerStatus.version}}</strong><br/>
+                                        Process id is <strong>{{getServerStatus.pid}}</strong><br/>
+                                        Process name is <strong>{{getServerStatus.process}}</strong><br/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#if getDBStats}}
+                        <div class="col-md-3">
+                            <table class="table small m-b-xs">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>{{getDBStats.collections}}</strong> Collections
+                                    </td>
+                                    <td>
+                                        <strong>{{getDBStats.objects}}</strong> Objects
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>{{getDBStats.dataSize}}</strong> Data Size
+                                    </td>
+                                    <td>
+                                        <strong>{{getDBStats.storageSize}}</strong> Storage Size
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>{{getDBStats.indexes}}</strong> Indexes
+                                    </td>
+                                    <td>
+                                        <strong>{{getDBStats.indexSize}}</strong> Index Size
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>{{getDBStats.fileSize}}</strong> File Size
+                                    </td>
+                                    <td>
+                                        <strong>{{getDBStats.numExtents}}</strong> Extents
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {{/if}}
+                </div>
+
+                <!-- CHARTS -->
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <!-- MEMORY USAGE -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Memory Usage</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divHeapMemoryChart" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- QUEUED READ/WRITE -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Queued Read/Write <span id="spanTotalQueuedRW"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divQueuedReadWrite" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACTIVE READ/WRITE -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Active Read/Write <span id="spanTotalActiveRW"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divActiveReadWrite" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- CONNECTIONS -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Connections <span id="spanAvailableConnections"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divConnectionsChart" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NETWORK -->
+                        <div class="col-lg-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Network <span id="spanTotalRequests"></span></h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divNetworkChart" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLLECTION READ/WRITE -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Collections Read/Write</h5>
+                                </div>
+                                <div id="divCollectionsReadWrite" class="ibox-content">
+                                    <table id="tblCollectionsReadWrite"
+                                           class="table table-striped table-bordered table-hover dataTables-example dataTable"
+                                           style="width: 100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Collection</th>
+                                            <th>Read (Microseconds)</th>
+                                            <th>Write (Microseconds)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OP COUNTERS -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <h5>Operation Counters</h5>
+                                </div>
+                                <div class="ibox-content">
+                                    <div id="divOperationCountersChart" class="flot-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            {{else}}
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="text-center m-t-lg">
+                                <h1>Statistics are disabled by settings</h1>
+                                <small id="errorMessage">
+                                    To see the statistics of your database, simply
+                                    <strong>enable</strong> <i>show database statistics</i> setting
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+
+
+        {{else}}
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center m-t-lg">
+                            <h1>
+                                <img width="225" height="150" src="/logo/new/image_with_text2.png"/>
+                            </h1>
+                            {{#if isSubscribed}}
+                                <small>
+                                    Connect to your database, by clicking <b>Connect</b> button.
+                                </small>
+                                <br/>
+                                <br/>
+                                <button type="button" class="btn btn-primary ladda-button" disabled
+                                        data-style="contract">Thanks for subscription
+                                </button>
+                            {{else}}
+                                <small>
+                                    Subscribe to Mongoclient Newsletter by filling your e-mail address to below
+                                    input,
+                                    and pressing <b>Subscribe</b>
+                                </small>
+                                <div class="row">
+                                    <div class="col-lg-offset-4 col-lg-4">
+                                        <input id="txtEmailToSubscribe" type="email"
+                                               placeholder="E-mail, don't worry we hate spam !"
+                                               class="form-control required"/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <button id="btnSubscribe" type="button" class="btn btn-primary ladda-button"
+                                        data-style="contract">Subscribe
+                                </button>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {{/if}}
+    {{/if}}
+</template>
